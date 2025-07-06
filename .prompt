@@ -1,3 +1,5 @@
+#!/bin/bash
+
 _prompt_normal="\001$(tput sgr0)\002"
 _prompt_red="\001$(tput setaf 1)\002"
 _prompt_green="\001$(tput setaf 2)\002"
