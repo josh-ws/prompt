@@ -15,3 +15,12 @@ Currently shows:
 - The elapsed time for the last command.
 
 ## Installation
+
+Download `.prompt` to your home directory, and then add the following to your `~/.bashrc`:
+
+```sh
+if [[ -n $PS1 && -f ~/.prompt ]]; then
+  . ~/.prompt
+  prompt_init_ps1
+fi
+```
