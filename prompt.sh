@@ -1,0 +1,61 @@
+_prompt_normal="\001$(tput sgr0)\002"
+_prompt_red="\001$(tput setaf 1)\002"
+_prompt_green="\001$(tput setaf 2)\002"
+_prompt_yellow="\001$(tput setaf 3)\002"
+_prompt_bold="\001$(tput bold)\002"
+
+function _prompt_cwd {
+  printf "${_prompt_bold}$PWD${_prompt_normal}"
+}
+
+function _prompt_hostname {
+  printf "${_prompt_green}$HOSTNAME${_prompt_normal}"
+}
+
+function _prompt_current_user {
+  printf "${_prompt_red}$USER${_prompt_normal}"
+}
+
+function _prompt_git_dirty {
+  local dirty=$(git status --porcelain 2> /dev/null)
+  if [[ -n $dirty ]]; then 
+    printf "*"
+  fi 
+}
+
+function _prompt_current_git_branch {
+  local branch=$(git branch --no-color --show-current 2>/dev/null)
+  if [[ -n $branch ]]; then 
+    printf "(${_prompt_yellow}${branch}${_prompt_normal}$(_prompt_git_dirty)) "
+  fi
+}
+
+function _prompt_timer_start {
+  timer=${timer:-$(date +%s%N)}
+}
+
+function _prompt_timer_stop {
+  local df=$(($(date +%s%N) - $timer))
+  elapsed=$((df / 1000000))
+  unset timer
+}
+
+function _prompt_timer_show {
+  printf "${color}${elapsed}ms${_prompt_normal}"
+}
+
+function prompt_init_ps1 {
+  trap '_prompt_timer_start' DEBUG
+  PROMPT_COMMAND=_prompt_timer_stop
+
+  PS1=''
+  PS1+='\n'
+  PS1+='┌─'
+  PS1+='$(_prompt_current_user)'
+  PS1+='@'
+  PS1+='$(_prompt_hostname) ' 
+  PS1+='$(_prompt_cwd) ' 
+  PS1+='$(_prompt_current_git_branch)'
+  PS1+='$(_prompt_timer_show)\n'
+  PS1+='└─\$ '
+}
