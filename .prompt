@@ -28,15 +28,18 @@ function _prompt_git_dirty {
 function _prompt_current_git_branch {
   local branch=$(git branch --no-color --show-current 2>/dev/null)
   if [[ -n $branch ]]; then
-    printf "(${_prompt_yellow}${branch}${_prompt_normal}$(_prompt_git_dirty)) "
+    printf "(${_prompt_yellow}${branch}${_prompt_normal}$(_prompt_git_dirty))"
   fi
 }
 
 function prompt_init_ps1 {
   PS1=''
+  PS1+='\n'
+  PS1+='┌─'
   PS1+='$(_prompt_current_user)'
   PS1+='@'
   PS1+='$(_prompt_hostname) '
   PS1+='$(_prompt_cwd) '
-  PS1+='$(_prompt_current_git_branch)'
+  PS1+='$(_prompt_current_git_branch)\n'
+  PS1+='└─\$ '
 }
