@@ -1,45 +1,59 @@
 #!/bin/bash
 
-_prompt_normal="\001$(tput sgr0)\002"
-_prompt_red="\001$(tput setaf 1)\002"
-_prompt_green="\001$(tput setaf 2)\002"
-_prompt_yellow="\001$(tput setaf 3)\002"
-_prompt_bold="\001$(tput bold)\002"
+__prompt_normal="\001$(tput sgr0)\002"
+__prompt_red="\001$(tput setaf 1)\002"
+__prompt_green="\001$(tput setaf 2)\002"
+__prompt_yellow="\001$(tput setaf 3)\002"
+__prompt_bold="\001$(tput bold)\002"
 
-function _prompt_cwd {
-  printf "${_prompt_bold}$PWD${_prompt_normal}"
+__prompt_is_root()
+{
+    [ "$(id -u)" -eq 0 ]
 }
 
-function _prompt_hostname {
-  printf "${_prompt_green}$HOSTNAME${_prompt_normal}"
+__prompt_user_char()
+{
+    if __prompt_is_root; then printf "#"; else printf "$"; fi
 }
 
-function _prompt_current_user {
-  printf "${_prompt_red}$USER${_prompt_normal}"
+__prompt_cwd()
+{
+  printf "${__prompt_bold}$PWD${__prompt_normal}"
 }
 
-function _prompt_git_dirty {
+__prompt_hostname()
+{
+  printf "${__prompt_green}$HOSTNAME${__prompt_normal}"
+}
+
+__prompt_current_user()
+{
+  printf "${__prompt_red}$USER${__prompt_normal}"
+}
+
+__prompt_git_dirty()
+{
   local dirty=$(git status --porcelain 2> /dev/null)
   if [[ -n $dirty ]]; then
     printf "*"
   fi
 }
 
-function _prompt_current_git_branch {
+__prompt_current_git_branch()
+{
   local branch=$(git branch --no-color --show-current 2>/dev/null)
   if [[ -n $branch ]]; then
-    printf "(${_prompt_yellow}${branch}${_prompt_normal}$(_prompt_git_dirty))"
+    printf " ${__prompt_yellow}${branch}${__prompt_normal}$(__prompt_git_dirty)"
   fi
 }
 
-function prompt_init_ps1 {
+function prompt_init_ps1
+{
   PS1=''
-  PS1+='\n'
-  PS1+='┌─'
-  PS1+='$(_prompt_current_user)'
+  PS1+='[$(__prompt_current_user)'
   PS1+='@'
-  PS1+='$(_prompt_hostname) '
-  PS1+='$(_prompt_cwd) '
-  PS1+='$(_prompt_current_git_branch)\n'
-  PS1+='└─\$ '
+  PS1+='$(__prompt_hostname) '
+  PS1+='$(__prompt_cwd)'
+  PS1+='$(__prompt_current_git_branch)]'
+  PS1+='$(__prompt_user_char) '
 }
